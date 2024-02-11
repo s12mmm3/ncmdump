@@ -5,7 +5,7 @@
 #include <vector>
 #include <filesystem>
 
-#if defined(_WIN32) && defined(_MSC_VER)
+#if defined(_WIN32)
 #include <Windows.h>
 #endif
 
@@ -20,18 +20,24 @@ void displayHelp() {
     std::cout << "  -h, --help       Display this help message" << std::endl;
 }
 
-void processFile(const fs::path& filePath) {
+void processFile(const fs::path filePath) {
     if (fs::exists(filePath) == false) {
         std::cerr << "Error: file '" << filePath.string() << "' does not exist." << std::endl;
         return;
     }
 
     try {
-        NeteaseCrypt crypt(filePath.string());
+        NeteaseCrypt crypt(filePath);
         crypt.Dump();
         crypt.FixMetadata();
 
-        std::cout << BOLDGREEN << "Done: '" << RESET << crypt.dumpFilepath().string() << "'" << std::endl;
+        std::cout << BOLDGREEN << "Done: '" << RESET;
+#if defined(_WIN32)
+        std::wcout << crypt.dumpFilepath().wstring();
+#else
+        std::cout << crypt.dumpFilepath().string();
+#endif
+        std::cout << "'" << std::endl;
     } catch (const std::invalid_argument& e) {
         std::cerr << BOLDRED << "Exception: " << RESET << RED << e.what() << RESET << " '" << filePath.string() << "'" << std::endl;
     } catch (...) {
@@ -47,13 +53,13 @@ void processFilesInFolder(const fs::path& folderPath) {
     }
 }
 
-#if defined(_WIN32) && defined(_MSC_VER)
+#if defined(_WIN32)
 int wmain(int argc, wchar_t* argv[])
 #else
 int main(int argc, char **argv)
 #endif
 {
-#if defined(_WIN32) && defined(_MSC_VER)
+#if defined(_WIN32)
     SetConsoleOutputCP(CP_UTF8);
 #endif
 
@@ -67,7 +73,7 @@ int main(int argc, char **argv)
 
     bool folderProvided = false;
 
-#if defined(_WIN32) && defined(_MSC_VER)
+#if defined(_WIN32)
 #define COMPARE_STR(s1, s2) (wcscmp(s1, s2) == 0)
 #define HELP_SHORT L"-h"
 #define HELP_LONG L"--help"
@@ -95,14 +101,7 @@ int main(int argc, char **argv)
                 return 1;
             }
         } else {
-#if defined(_WIN32) && defined(_MSC_VER)
-            int multiByteStrSize = WideCharToMultiByte(CP_UTF8, 0, argv[1], -1, NULL, 0, NULL, NULL);
-            char *multiByteStr = new char[multiByteStrSize];
-            WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, multiByteStr, multiByteStrSize, NULL, NULL);
-            fs::path path(multiByteStr);
-#else
             fs::path path(argv[i]);
-#endif
             files.push_back(path);
         }
     }

@@ -107,7 +107,7 @@ NeteaseMusicMetadata::NeteaseMusicMetadata(cJSON* raw) {
 	}
 }
 
-bool NeteaseCrypt::openFile(std::filesystem::path const& path) {
+bool NeteaseCrypt::openFile(std::filesystem::path const path) {
 	mFile.open(path, std::ios::in | std::ios::binary);
 	if (!mFile.is_open()) {
 		return false;
@@ -165,7 +165,7 @@ void NeteaseCrypt::buildKeyBox(unsigned char *key, int keyLen) {
 	}
 }
 
-std::string NeteaseCrypt::mimeType(std::string& data) {
+std::string NeteaseCrypt::mimeType(std::string data) {
 	if (memcmp(data.c_str(), mPng, 8) == 0) {
 		return std::string("image/png");
 	}
@@ -174,7 +174,7 @@ std::string NeteaseCrypt::mimeType(std::string& data) {
 }
 
 void NeteaseCrypt::FixMetadata() {
-	if (mDumpFilepath.string().length() <= 0) {
+    if (mDumpFilepath.empty()) {
 		throw std::invalid_argument("must dump before");
 	}
 
@@ -263,7 +263,7 @@ NeteaseCrypt::~NeteaseCrypt() {
 	mFile.close();
 }
 
-NeteaseCrypt::NeteaseCrypt(std::filesystem::path const& path) {
+NeteaseCrypt::NeteaseCrypt(std::filesystem::path path) {
 	if (!openFile(path)) {
 		throw std::invalid_argument("Can't open file");
 	}

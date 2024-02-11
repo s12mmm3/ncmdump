@@ -52,17 +52,17 @@ private:
 
 private:
 	bool isNcmFile();
-	bool openFile(std::filesystem::path const&);
+    bool openFile(std::filesystem::path const);
 	int read(char *s, std::streamsize n);
 	void buildKeyBox(unsigned char *key, int keyLen);
-	std::string mimeType(std::string& data);
+    std::string mimeType(std::string data);
 
 public:
-	const std::filesystem::path& filepath() const { return mFilepath; }
-	const std::filesystem::path& dumpFilepath() const { return mDumpFilepath; }
+    const std::filesystem::path filepath() const { return mFilepath; }
+    const std::filesystem::path dumpFilepath() const { return mDumpFilepath; }
 
 public:
-	NeteaseCrypt(std::filesystem::path const&);
+    NeteaseCrypt(std::filesystem::path);
 	~NeteaseCrypt();
 
 public:
